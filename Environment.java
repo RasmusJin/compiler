@@ -22,13 +22,7 @@ class Environment {
 		if (value == null) { System.err.println("Variable not defined: "+id); System.exit(-1); }
 		return value;
 	}
-    
-    public String toString() {
-
-	public void setAssignments(HashMap<String, Expr> assignments) {
-		this.assignments = assignments;
-	}
-
+   
 	public String toString() {
 	String table = "";
 	for (Entry<String,Boolean> entry : variableValues.entrySet()) {
