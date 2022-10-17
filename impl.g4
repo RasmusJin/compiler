@@ -9,9 +9,9 @@ start :'.hardware ' nm=SIGNAL
             EOF
             ;
 
-assignment : x=SIGNAL op='=' e=expr+ ;
+assignment : x=SIGNAL op='=' e=expr ;
 
-latches: SIGNAL '->' e2=SIGNAL;
+latches: in=SIGNAL '->' out=SIGNAL;
 
 
 expr : 	'!' e1=expr			# BoolNot
@@ -19,6 +19,7 @@ expr : 	'!' e1=expr			# BoolNot
             	| e1=expr op='||' e2=expr # BoolOr
 		| '(' e1=expr ')'	  # Parentheses
             	| e1=SIGNAL		 # Sig
+
             	;
 
 inpseq      : e1=SIGNAL '=' e2=('0'|'1')+;

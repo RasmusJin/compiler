@@ -4,6 +4,7 @@ import org.antlr.v4.runtime.CharStreams;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class main {
     public static void main(String[] args) throws IOException{
@@ -36,7 +37,7 @@ public class main {
 
         Interpreter interpreter = new Interpreter();
 
-        AST result = (AST)interpreter.visit(parseTree);
+        Command result = (Command)interpreter.visit(parseTree);
 
         //System.out.println("The result is: "+
         result.eval(new Environment());
@@ -53,22 +54,40 @@ class Interpreter extends AbstractParseTreeVisitor<AST> implements implVisitor<A
 
     @Override
     public AST visitStart(implParser.StartContext ctx) {
-        System.out.println("start visited");
+        System.out.println("starting program"+ctx.nm.getText());
         ArrayList<String>input=new ArrayList<>();
+        ArrayList<String>output=new ArrayList<>();
+        ArrayList<Latch> latch=new ArrayList<>();
+        HashMap<String, Expr>update=new HashMap<>();
         for (Token inp:ctx.in) {
             input.add(inp.getText());
         }
-        return visit(ctx);
+        for (Token outp:ctx.out) {
+            output.add(outp.getText());
+        }
+        for (implParser.LatchesContext lat:ctx.lt ) {
+            latch.add(new Latch(lat.in.getText(), lat.out.getText()));
+        }
+//        for (implParser.AssignmentContext assign:ctx.sig) {
+//            update.put(assign.x.getText(),(Expr)visit(assign.e.ev));
+//        }
+        System.out.println(c);
+        System.out.println(latch);
+        System.out.println(input);
+        System.out.println(output);
+        return new Start();
+
     }
 
     @Override
     public AST visitAssignment(implParser.AssignmentContext ctx) {
-        return null;
+        System.out.println("in assignment");
+        return new Assignment(ctx.x.getText(),(Expr)visit(ctx.e));
     }
 
     @Override
     public AST visitLatches(implParser.LatchesContext ctx) {
-        return null;
+        return new Latch(ctx.in.getText(),ctx.out.getText());
     }
 
     @Override
