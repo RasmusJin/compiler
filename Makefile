@@ -21,3 +21,6 @@ test:	implLexer.class main.class impl.g4 input.txt
 
 tree:	implLexer.class impl.g4 input.txt
 	$(grun) impl start -gui -tokens input.txt
+
+clean:
+	ls | grep -v 'AST.java|Environment.java|Makefile|input.txt|main.java|impl.g4' | xargs rm
