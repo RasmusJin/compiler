@@ -36,7 +36,7 @@ public class main {
 
         Interpreter interpreter = new Interpreter();
 
-        Command result = (Command)interpreter.visit(parseTree);
+        AST result = (AST)interpreter.visit(parseTree);
 
         //System.out.println("The result is: "+
         result.eval(new Environment());

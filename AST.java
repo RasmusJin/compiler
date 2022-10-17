@@ -1,27 +1,27 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AST{}
-
-abstract class Command extends AST{
+public abstract class AST{
     abstract public void eval(Environment env);
 }
-class Start extends Command{
+
+
+class Start extends AST{
 
     @Override
     public void eval(Environment env) {
 
     }
 }
-class Identifiers extends Command{  //model class til constructoren for identifiers.
+class Assignment extends AST{  //model class til constructoren for identifiers.
     String varname;
     String id;
-    Identifiers(String id, String varname){this.id=id; this.varname=varname; }
+    Assignment(String id, String varname){this.id=id; this.varname=varname; }
     public void eval(Environment env) {env.setId(id, varname);
 
     }
 }
-class inpseq extends Command{ //en liste med inputsekvensen.
+class inpseq extends AST{ //en liste med inputsekvensen.
     List<Boolean> inseq;
 
     String varname;
@@ -42,7 +42,8 @@ class inpseq extends Command{ //en liste med inputsekvensen.
     }
 
     @Override
-    public void eval(Environment env){
+    public void eval(Environment env) {
+
     }
 }
 
@@ -92,63 +93,7 @@ class parentheses extends Expr{
         return e1.eval(env);
     }
 }
-class inputId extends Identifiers{
-    inputId(String id, String varname) {
-        super(id, varname);
-    }
-    @Override
-    public void eval(Environment env) {
 
-    }
-}
-class outputId extends Identifiers{
-    outputId(String id, String varname) {
-        super(id, varname);
-    }
-    @Override
-    public void eval(Environment env) {
 
-        super.eval(env);
 
-    }
-}
-class latchId extends Identifiers{
-    String e2;
-    latchId(String id, String varname, String e2){
-        super(id, varname);
-        this.e2=e2;
-    }
-
-    @Override
-    public void eval(Environment env) {
-        super.eval(env);
-    }
-}
-class updateId extends Identifiers{
-
-    updateId(String id, String varname){
-        super(id, varname);
-    }
-    @Override
-    public void eval(Environment env) {
-        super.eval(env);
-    }
-}
-class simId extends Identifiers{
-
-    simId(String id, String varname){
-        super(id, varname);
-    }
-
-    @Override
-    public void eval(Environment env) {
-        super.eval(env);
-    }
-}
-
-class Hardware extends Identifiers{
-    Hardware(String id, String varname){
-        super(id, varname);
-    }
-}
 
