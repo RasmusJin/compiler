@@ -9,9 +9,9 @@ start :'.hardware ' nm=SIGNAL
             EOF
             ;
 
-assignment : x=SIGNAL op='=' e=expr+ ;
+assignment : x=SIGNAL op='=' e=expr ;
 
-latches: SIGNAL '->' e2=SIGNAL;
+latches: in=SIGNAL '->' out=SIGNAL;
 
 
 expr : 	'!' e1=expr			# BoolNot
