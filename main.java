@@ -2,10 +2,10 @@ import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 import org.antlr.v4.runtime.CharStreams;
 
-import java.beans.Expression;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class main {
     public static void main(String[] args) throws IOException{
@@ -41,7 +41,7 @@ public class main {
         Command result = (Command)interpreter.visit(parseTree);
 
         //System.out.println("The result is: "+
-        result.eval(new Environment());
+        //result.eval(new Environment());
 
     }
 }
@@ -55,29 +55,84 @@ class Interpreter extends AbstractParseTreeVisitor<AST> implements implVisitor<A
 
     @Override
     public AST visitStart(implParser.StartContext ctx) {
-        System.out.println("starting program"+ctx.nm.getText());
+        System.out.println("starting program"+""+ctx.nm.getText());
         ArrayList<String>input=new ArrayList<>();
         ArrayList<String>output=new ArrayList<>();
-        ArrayList<Latch> latch=new ArrayList<>();
+        ArrayList<Latch> latchList=new ArrayList<>();
         HashMap<String, Expr>update=new HashMap<>();
+        HashMap<String, List<Boolean>>insequence=new HashMap<>();
+        HashMap<String, List<Boolean>> outValues = new HashMap<>();
+        ArrayList<String> signals = new ArrayList<>();
         for (Token inp:ctx.in) {
             input.add(inp.getText());
         }
         for (Token outp:ctx.out) {
             output.add(outp.getText());
+            outValues.put(outp.getText(),new ArrayList<>());
         }
         for (implParser.LatchesContext lat:ctx.lt ) {
-            latch.add(new Latch(lat.in.getText(), lat.out.getText()));
+            latchList.add(new Latch(lat.in.getText(), lat.out.getText()));
         }
-//        for (implParser.AssignmentContext assign:ctx.sig) {
-//            update.put(assign.x.getText(),(Expr)visit(assign.e.ev));
-//        }
-        System.out.println(c);
-        System.out.println(latch);
-        System.out.println(input);
-        System.out.println(output);
-        return new Start();
+        for (implParser.AssignmentContext assign:ctx.sig) {
+            signals.add(assign.x.getText());
+            update.put(assign.x.getText(),(Expr)visit(assign.e));
 
+        }
+        for (implParser.InpseqContext seq:ctx.inp) {
+            inpseq tempIn = new inpseq(seq.e1.getText(), seq.e2);
+            insequence.put(seq.e1.getText(), tempIn.getInseq());
+        }
+        Environment env = new Environment();
+
+        for (int i = 0; i < insequence.get(input.get(0)).size(); i++) {
+            for (Latch latch:latchList) {
+                latch.updateLatch(env);
+            }
+            for (String signal:input) {
+                env.setVariable(signal,insequence.get(signal).get(i));
+            }
+            for (String assign:signals) {
+                env.setVariable(assign,update.get(assign).eval(env));
+            }
+            for (String tempOut:outValues.keySet()) {
+                if(outValues.get(tempOut)==null){
+
+                }
+                outValues.get(tempOut).add(env.getVariable(tempOut));
+
+            }
+        }
+
+        StringBuilder str = new StringBuilder();
+
+
+        for (String inOut:input) {
+            for (Boolean tempVal:insequence.get(inOut)) {
+                if(!tempVal){
+                    str.append('0');
+                }
+                else{
+                    str.append('1');
+                }
+            }
+            str.append(" ").append(inOut);
+        }
+        StringBuilder strOut = new StringBuilder();
+        for (String inOut:output) {
+            for (Boolean tempVal:outValues.get(inOut)) {
+                if(!tempVal){
+                    strOut.append('0');
+                }
+                else{
+                    strOut.append('1');
+                }
+            }
+            strOut.append(" ").append(inOut).append("\n");
+        }
+        System.out.println(str);
+        System.out.println(strOut);
+
+        return new Start();
     }
 
     @Override
@@ -85,35 +140,33 @@ class Interpreter extends AbstractParseTreeVisitor<AST> implements implVisitor<A
         System.out.println("in assignment");
         return new Assignment(ctx.x.getText(),(Expr)visit(ctx.e));
     }
-
     @Override
     public AST visitLatches(implParser.LatchesContext ctx) {
         return new Latch(ctx.in.getText(),ctx.out.getText());
     }
-
     @Override
     public AST visitSig(implParser.SigContext ctx) {
-        return null;
+        return new sig((ctx.e1.getText()));
     }
 
     @Override
     public AST visitBoolNot(implParser.BoolNotContext ctx) {
-        return null;
+        return new b_not((Expr)visit(ctx.e1));
     }
 
     @Override
     public AST visitBoolOr(implParser.BoolOrContext ctx) {
-        return null;
+        return new b_or((Expr)visit(ctx.e1),(Expr)visit(ctx.e2));
     }
 
     @Override
     public AST visitParentheses(implParser.ParenthesesContext ctx) {
-        return null;
+        return new parentheses((Expr)visit(ctx.e1));
     }
 
     @Override
     public AST visitBoolAnd(implParser.BoolAndContext ctx) {
-        return null;
+        return new b_and((Expr)visit(ctx.e1),(Expr)visit(ctx.e2));
     }
 
     @Override

@@ -1,9 +1,13 @@
+import org.antlr.v4.runtime.Token;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AST{
+
 }
 abstract class Command extends AST{
+
     abstract public void eval(Environment env);
 }
 
@@ -15,11 +19,11 @@ class Start extends Command{
 
     }
 }
-class Assignment extends AST{  //model class til constructoren for identifiers.
+class Assignment extends Command{  //model class til constructoren for identifiers.
     String varname;
-    String id;
-    Assignment(String id, String varname){this.id=id; this.varname=varname; }
-    public void eval(Environment env) {env.setId(id, varname);
+    Expr expr;
+    Assignment(String varname, Expr expr){ this.varname=varname; this.expr=expr;}
+    public void eval(Environment env) {env.setVariable(varname, expr.eval(env));
 
     }
 }
@@ -27,12 +31,13 @@ class inpseq extends Command{ //en liste med inputsekvensen.
     List<Boolean> inseq;
 
     String varname;
-    public inpseq(String varname, String inInput){
+    public inpseq(String varname, List<Token> inInput){
         this.varname=varname;
         this.inseq=new ArrayList<>();
 
-        for(char i : inInput.toCharArray()){
-            int j = i-0x30;
+        for(Token i : inInput){
+            String c=i.getText();
+            int j = c.toCharArray()[0] - 0x30;
             if(j==0){
                 inseq.add(false);
             }
@@ -40,9 +45,11 @@ class inpseq extends Command{ //en liste med inputsekvensen.
                 inseq.add(true);
             }
         }
-        System.out.println(inseq);
-    }
 
+    }
+    public List<Boolean> getInseq(){
+        return this.inseq;
+    }
     @Override
     public void eval(Environment env) {
 
@@ -56,6 +63,14 @@ class Latch extends Command{
         this.in=in;
         this.out=out;
     }
+    public void updateLatch(Environment env){
+        if(env.getVariable(this.in)==null){
+            env.setVariable(this.out, false);
+        }
+        else{
+            env.setVariable(this.out,env.getVariable(this.in));
+        }
+    }
     @Override
     public void eval(Environment env) {
 
@@ -68,6 +83,7 @@ class Latch extends Command{
 abstract class Expr extends AST{
     abstract public Boolean eval(Environment env);
 }
+
 
 class b_and extends Expr{
     Expr e1, e2;

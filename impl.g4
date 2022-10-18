@@ -19,9 +19,10 @@ expr : 	'!' e1=expr			# BoolNot
             	| e1=expr op='||' e2=expr # BoolOr
 		| '(' e1=expr ')'	  # Parentheses
             	| e1=SIGNAL		 # Sig
+
             	;
 
-inpseq      : e1=SIGNAL '=' e2=('0'|'1')+;
+inpseq      : e1=SIGNAL '=' e2+=('0'|'1')+;
 SIGNAL : [a-zA-Z] [a-zA-Z0-9_]*;
 
 
