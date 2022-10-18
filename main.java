@@ -171,6 +171,6 @@ class Interpreter extends AbstractParseTreeVisitor<AST> implements implVisitor<A
 
     @Override
     public AST visitInpseq(implParser.InpseqContext ctx) {
-        return null;
+        return new inpseq(ctx.e1.getText(), ctx.e2);
     }
 }
