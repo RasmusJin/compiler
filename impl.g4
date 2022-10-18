@@ -3,7 +3,7 @@ grammar impl;
 start :'.hardware ' nm=SIGNAL
          '.inputs ' in+=SIGNAL+
          '.outputs' out+=SIGNAL+
-          ('.latch ' lt+=latches)+
+          ('.latch ' lt+=latches)*
           '.update' sig+=assignment*
             '.simulate' inp+=inpseq*
             EOF
