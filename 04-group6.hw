@@ -1,35 +1,15 @@
-.hardware trafiklys
+.hardware halfadder
 
-// Trafiklys eksempel.
+.inputs in1 in2
+.outputs out0 out1
 
-.inputs Button
-.outputs Red Yel Green PRed PGreen
-
-.latch Red -> RedM
-.latch Yel -> YelM
-.latch Req -> ReqM
+.latch in1 -> in1l
 
 .update
+out0=(in1 || in2) && (!in1 || !in2)
+out1=in1 && in2
 
-Clr = RedM && !YelM
-Req = (ReqM || Button) && !Clr
-Red = !RedM && YelM || RedM && !YelM
-Yel = !RedM && !YelM && Req || RedM && !YelM
-Green  = !Red && !Yel
-PGreen = Red && !Yel
-PRed   = !PGreen
+.simulate 
+in1=0011
+in2=0101
 
-.simulate Button=001001111001
-
-/*
-
-Expected output of the simulator:
-
-001001111001 Button
-000110011000 Red
-001010101001 Yel
-110001000110 Green
-111011101111 PRed
-000100010000 PGreen
-
-*/

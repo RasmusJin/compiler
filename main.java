@@ -115,7 +115,7 @@ class Interpreter extends AbstractParseTreeVisitor<AST> implements implVisitor<A
                     str.append('1');
                 }
             }
-            str.append(" ").append(inOut);
+            str.append(" ").append(inOut+"\n");
         }
         StringBuilder strOut = new StringBuilder();
         for (String inOut:output) {
