@@ -55,7 +55,7 @@ class Interpreter extends AbstractParseTreeVisitor<AST> implements implVisitor<A
 
     @Override
     public AST visitStart(implParser.StartContext ctx) {
-        System.out.println("starting program"+""+ctx.nm.getText());
+        System.out.println("starting program"+" "+ctx.nm.getText());
         ArrayList<String>input=new ArrayList<>();
         ArrayList<String>output=new ArrayList<>();
         ArrayList<Latch> latchList=new ArrayList<>();
