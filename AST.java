@@ -126,16 +126,6 @@ class parentheses extends Expr{
         return e1.eval(env);
     }
 }
-class Variable extends Expr{
-    String name;
-    Variable(String name){
-        this.name=name;
-    }
-    @Override
-    public Boolean eval(Environment env) {
-        return env.getVariable(name);
-    }
-}
 
 
 
